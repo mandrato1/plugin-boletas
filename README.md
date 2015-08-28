@@ -1,0 +1,2 @@
+# plugin-boletas
+Este Plug-in lleva registro de las boletas de las compras realizadas en cierta tienda. Tiene una tabla para almacenar la información de los clientes que han comprado en la tienda, incluyendo RUT, nombre, apellido y edad. También habrá otra tabla que contenga los detalles de las boletas, como código de barras (ID), detalles de compra, monto pagado, fecha, etc. Además, habrá una tabla intermedia que contenga los productos llevados en una compra en particular, su ID, nombre, tipo, cantidad y precio unitario.
