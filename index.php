@@ -24,6 +24,7 @@
  
  
 require_once (dirname(dirname(dirname(__FILE__)))."/config.php");
+require_once ($CFG->dirroot."/local/pluginboletas/forms/boletas_form.php");
 
 $context = context_system::instance();
 
@@ -62,6 +63,24 @@ if ($action == "delete")
 			print_error("La boleta no existe");
 			$action = "view";
 		}
+	}
+}
+
+if ($action == "add")
+{
+	$addform = new addboleta_form();
+	if ($addform->is_cancelled())
+	{
+		$action = "view";
+	}
+	else if ($creationdata = $addform->get_data())
+	{
+		$record = new stdClass();
+		$record->id = $creationdata->id;
+		$record->fecha = time();
+		
+		$DB->insert_record("pluginboletas_boletas", $record);
+		$action = "view";
 	}
 }
 
@@ -109,9 +128,14 @@ if ($action == "view")
 		}
 	}
 	
+	$buttonurl = new moodle_url("/local/pluginboletas/index.php", array("action" => "add"));
 	
 }
 
+if ($action == "add")
+{
+	$addform->display();
+}
 
 if ($action == "view")
 {
@@ -124,6 +148,8 @@ if ($action == "view")
 	{
 			echo html_writer::table($boletastable);
 	}
+	
+	echo html_writer::nonempty_tag("div", $OUTPUT->single_button($buttonurl, "Anadir registro de boleta"), array("align" => "center"));
 }
 
 echo $OUTPUT->footer();
