@@ -49,6 +49,29 @@ $PAGE->set_title("Boletas UAI");
 $PAGE->set_heading("Boletas UAI");
 echo $OUTPUT->header();
 
+
+if ($action == "add")
+{
+	$addform = new addboleta_form();
+	if ($addform->is_cancelled())
+	{
+		$action = "view";
+	}
+	else if ($creationdata = $addform->get_data())
+	{
+
+
+		$record = new stdClass();
+		$record->usuarios_id = $creationdata->usuarios_id;
+		$record->sedes_id = $creationdata->sedes_id;
+		$record->fecha = time();
+		$record->monto = $creationdata->monto;
+
+		$DB->insert_record("pluginboletas_boletas", $record);
+		$action = "view";
+	}
+}
+
 // Delete the selected receipt
 if ($action == "delete")
 {
@@ -72,23 +95,7 @@ if ($action == "delete")
 	}
 }
 
-if ($action == "add")
-{
-	$addform = new addboleta_form();
-	if ($addform->is_cancelled())
-	{
-		$action = "view";
-	}
-	else if ($creationdata = $addform->get_data())
-	{
-		$record = new stdClass();
-		$record->id = $creationdata->id;
-		$record->fecha = time();
-		
-		$DB->insert_record("pluginboletas_boletas", $record);
-		$action = "view";
-	}
-}
+
 
 if ($action == "view")
 {

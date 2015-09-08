@@ -29,11 +29,33 @@ class addboleta_form extends moodleform
 {
 	function definition ()
 	{
-		global $CFG;
+		global $DB, $CFG;
 		$mform = $this->_form;
 		
-		$mform->addElement ("text", "id", "ID");
-		$mform->setType ("id", PARAM_TEXT);
+		// Retrieves each address
+		$sedes = $DB->get_records ("pluginboletas_sedes");
+		
+		// User ID input
+		$mform->addElement ("text", "usuarios_id", "ID del usuario");
+		$mform->setType ("usuarios_id", PARAM_TEXT);
+		
+		// Select address input
+		$address = array("");
+		foreach ($sedes as $sede)
+		{
+			$address[] = $sede->direccion;
+		}
+		$address[0] = null;
+		$mform->addElement ("select", "sedes_id", "Sede de compra", $address);
+		$mform->setType ("usuarios_id", PARAM_TEXT);
+		
+		// Amount paid input
+		$mform->addElement ("text", "monto", "Monto");
+		$mform->setType ("monto", PARAM_TEXT);
+		
+		// Set action to "add"
+		$mform->addElement ("hidden", "action", "add");
+		$mform->setType ("action", PARAM_TEXT);
 		
 		$this->add_action_buttons(true);
 	}
@@ -42,18 +64,32 @@ class addboleta_form extends moodleform
 		global $DB;
 		$errors = array();
 		
-		$id = $data["id"];
+		$usuarios_id = $data["usuarios_id"];
+		$sedes_id = $data["sedes_id"];
+		$monto = $data["monto"];
 		
-		if (isset($data["id"]) && !empty($data["id"]) && $data["id"] != "" && $data["id"] != null )
+		if (isset($data["usuarios_id"]) && !empty($data["usuarios_id"]) && $data["usuarios_id"] != "" && $data["usuarios_id"] != null )
 		{
-			if (!$DB->get_recordset_select("pluginboletas_boletas", "id = ?", array($id)))
-			{
-				$errors["id"] = "El ID ingresado ya existe";
-			}
 		}
 		else
 		{
-			$errors["id"] = "Este campo es requerido";
+			$errors["usuarios_id"] = "Este campo es requerido";
+		}
+		
+		if (isset($data["sedes_id"]) && !empty($data["sedes_id"]) && $data["sedes_id"] != "" && $data["sedes_id"] != null )
+		{
+		}
+		else
+		{
+			$errors["sedes_id"] = "Este campo es requerido";
+		}
+		
+		if (isset($data["monto"]) && !empty($data["monto"]) && $data["monto"] != "" && $data["monto"] != null )
+		{
+		}
+		else
+		{
+			$errors["monto"] = "Este campo es requerido";
 		}
 		
 		return $errors;
