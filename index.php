@@ -38,6 +38,12 @@ $action = optional_param("action", "view", PARAM_TEXT);
 $idboleta = optional_param("idboleta", null, PARAM_INT);
 $date = date("Ymd", time());
 global $DB, $PAGE, $OUTPUT;
+echo time();
+
+require_login();
+if (isguestuser()) {
+	die();
+}
 
 $PAGE->set_title("Boletas UAI");
 $PAGE->set_heading("Boletas UAI");
@@ -92,7 +98,10 @@ if ($action == "view")
 	{
 		$boletastable->head = array (
 				"ID",
+				"ID de usuario",
+				"ID de sede",
 				"Fecha de emisi&oacute;n",
+				"Monto",
 				"Ajustes"
 		);
 		
@@ -122,7 +131,10 @@ if ($action == "view")
 			
 			$boletastable->data[] = array (
 					$boleta->id,
+					$boleta->usuarios_id,
+					$boleta->sedes_id,
 					date("d-m-Y", $boleta->fecha),
+					"$".$boleta->monto,
 					$deleteaction_boleta.$editaction_boleta
 			);
 		}

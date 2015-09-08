@@ -9,4 +9,4 @@ or later*/
 defined('MOODLE_INTERNAL') || die();
 $plugin->pluginname = "local_pluginboletas";
 $plugin->component = 'local_pluginboletas';
-$plugin->version = '2015083002';
+$plugin->version = '2015090806';
