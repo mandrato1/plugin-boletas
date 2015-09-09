@@ -72,6 +72,8 @@ if ($action == "add")
 	}
 }
 
+
+
 // Delete the selected receipt
 if ($action == "delete")
 {
@@ -148,7 +150,23 @@ if ($action == "view")
 	}
 	
 	$buttonurl = new moodle_url("/local/pluginboletas/index.php", array("action" => "add"));
-	
+
+	$toprow = array();
+	$toprow[] = new tabobject(
+			"Boletas",
+			new moodle_url("/local/pluginboletas/index.php"),
+			"Boletas"
+	);
+	$toprow[] = new tabobject(
+			"Usuarios",
+			new moodle_url("/local/pluginboletas/users.php"),
+			"Usuarios"
+	);
+	$toprow[] = new tabobject(
+			"Sedes",
+			new moodle_url("/local/pluginboletas/sedes.php"),
+			"Sedes"
+	);
 }
 
 if ($action == "add")
@@ -158,7 +176,7 @@ if ($action == "add")
 
 if ($action == "view")
 {
-	
+	echo $OUTPUT->tabtree($toprow, "Boletas");
 	if (count($boletas) == 0)
 	{
 		echo html_writer::nonempty_tag("h4", "No existen boletas", array("align" => "center"));
