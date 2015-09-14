@@ -38,10 +38,9 @@ $action = optional_param("action", "view", PARAM_TEXT);
 $idboleta = optional_param("idboleta", null, PARAM_INT);
 $date = date("Ymd", time());
 global $DB, $PAGE, $OUTPUT;
-echo time();
 
 require_login();
-if (isguestuser()) {
+if (isguestuser()){
 	die();
 }
 
@@ -49,18 +48,13 @@ $PAGE->set_title("Boletas UAI");
 $PAGE->set_heading("Boletas UAI");
 echo $OUTPUT->header();
 
-
-if ($action == "add")
-{
+if ($action == "add"){
 	$addform = new addboleta_form();
-	if ($addform->is_cancelled())
-	{
+	
+	if ($addform->is_cancelled()){
 		$action = "view";
 	}
-	else if ($creationdata = $addform->get_data())
-	{
-
-
+	else if ($creationdata = $addform->get_data()){
 		$record = new stdClass();
 		$record->usuarios_id = $creationdata->usuarios_id;
 		$record->sedes_id = $creationdata->sedes_id;
@@ -72,7 +66,37 @@ if ($action == "add")
 	}
 }
 
-
+if( $action == "edit" ){
+	if( $idboleta == null ){
+		print_error("La boleta no existe");
+		$action = "view";
+		
+	}else{
+		if($boleta = $DB->get_record("pluginboletas_boletas", array("id"=>$idboleta))){
+			$editform = new editboleta_form(null, array(
+					"idboleta" => $idboleta
+			));
+			$defaultdata = new stdClass();
+			$defaultdata->usuarios_id = $boleta->usuarios_id;
+			$defaultdata->sedes_id = $boleta->sedes_id;
+			$defaultdata->monto = $boleta->monto;
+			$editform->set_data($defaultdata);
+			if( $editform->is_cancelled() ){
+				$action = "view";
+			}else if($editform->get_data()){
+				$record = new stdClass();
+				$record->usuarios_id = $editform->get_data()->usuarios_id;
+				$record->sedes_id = $editform->get_data()->sedes_id;
+				$record->monto = $editform->get_data()->monto;
+				$DB->update_record("pluginboletas_boletas", $record);
+				$action = "view";
+			}
+		}else{
+			print_error("La boleta no existe");
+			$action = "view";
+		}
+	}
+}
 
 // Delete the selected receipt
 if ($action == "delete")
@@ -101,16 +125,19 @@ if ($action == "delete")
 
 if ($action == "view")
 {
-	$boletas = $DB->get_records("pluginboletas_boletas");
+	$sql = "SELECT b.id, b.fecha, b.monto, CONCAT(u.firstname, ' ', u.lastname) AS nombre, s.direccion
+			FROM {pluginboletas_boletas} AS b, {user} AS u, {pluginboletas_sedes} AS s 
+			WHERE b.usuarios_id=u.id AND b.sedes_id=s.id";
+	$boletas = $DB->get_records_sql($sql, array(1));
 	$boletastable = new html_table();
 	if (count($boletas) > 0)
 	{
 		$boletastable->head = array (
 				"ID",
-				"ID de usuario",
-				"ID de sede",
 				"Fecha de emisi&oacute;n",
 				"Monto",
+				"Cliente",
+				"Sede",
 				"Ajustes"
 		);
 		
@@ -140,10 +167,10 @@ if ($action == "view")
 			
 			$boletastable->data[] = array (
 					$boleta->id,
-					$boleta->usuarios_id,
-					$boleta->sedes_id,
 					date("d-m-Y", $boleta->fecha),
 					"$".$boleta->monto,
+					$boleta->nombre,
+					$boleta->direccion,
 					$deleteaction_boleta.$editaction_boleta
 			);
 		}
@@ -169,9 +196,12 @@ if ($action == "view")
 	);
 }
 
-if ($action == "add")
-{
+if ($action == "add"){
 	$addform->display();
+}
+
+if( $action == "edit" ){
+	$editform->display();
 }
 
 if ($action == "view")
