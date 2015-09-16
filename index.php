@@ -47,6 +47,7 @@ $PAGE->set_title("Boletas UAI");
 $PAGE->set_heading("Boletas UAI");
 echo $OUTPUT->header();
 
+// Adds a record to the database
 if ($action == "add"){
 	$addform = new addboleta_form();
 	
@@ -65,20 +66,23 @@ if ($action == "add"){
 	}
 }
 
+// Edits an existent record
 if($action == "edit"){
 	if($idboleta == null){
 		print_error("La boleta no existe");
 		$action = "view";
 	}else{
-		if($boleta = $DB->get_record("pluginboletas_boletas", array("id"=>$idboleta))){
+		if($boleta = $DB->get_record("pluginboletas_boletas", array("id" => $idboleta))){
 			$editform = new editboleta_form(null, array(
 					"idboleta" => $idboleta
 			));
+			
 			$defaultdata = new stdClass();
 			$defaultdata->usuarios_id = $boleta->usuarios_id;
 			$defaultdata->sedes_id = $boleta->sedes_id;
 			$defaultdata->monto = $boleta->monto;
 			$editform->set_data($defaultdata);
+			
 			if($editform->is_cancelled()){
 				$action = "view";
 			}else if($editform->get_data()){
@@ -87,6 +91,7 @@ if($action == "edit"){
 				$record->usuarios_id = $editform->get_data()->usuarios_id;
 				$record->sedes_id = $editform->get_data()->sedes_id;
 				$record->monto = $editform->get_data()->monto;
+				
 				$DB->update_record("pluginboletas_boletas", $record);
 				$action = "view";
 			}
@@ -97,42 +102,33 @@ if($action == "edit"){
 	}
 }
 
-// Delete the selected receipt
-if ($action == "delete")
-{
-	if ($idboleta == null)
-	{
+// Delete the selected record
+if ($action == "delete"){
+	if ($idboleta == null){
 		print_error("No se selecciono boleta");
 		$action = "view";
-	}
-	else
-	{
-		if ($boleta = $DB->get_record("pluginboletas_boletas", array("id"=>$idboleta)))
-		{
-			$DB->delete_records("pluginboletas_boletas", array("id"=>$boleta->id));
+	}else{
+		if ($boleta = $DB->get_record("pluginboletas_boletas", array("id" => $idboleta))){
+			$DB->delete_records("pluginboletas_boletas", array("id" => $boleta->id));
 			$action = "view";
-		}
-		else
-		{
+		}else{
 			print_error("La boleta no existe");
 			$action = "view";
 		}
 	}
 }
 
-
-
-if ($action == "view")
-{
+// Lists all the records in the database
+if ($action == "view"){
 	$sql = "SELECT b.id, b.fecha, b.monto, CONCAT(u.firstname, ' ', u.lastname) AS nombre, s.direccion
 			FROM {pluginboletas_boletas} AS b, {user} AS u, {pluginboletas_sedes} AS s 
 			WHERE b.usuarios_id=u.id AND b.sedes_id=s.id
 			GROUP BY b.id";
 	$boletas = $DB->get_records_sql($sql, array(1));
 	$boletastable = new html_table();
-	if (count($boletas) > 0)
-	{
-		$boletastable->head = array (
+	
+	if (count($boletas) > 0){
+		$boletastable->head = array(
 				"ID",
 				"Fecha de emisi&oacute;n",
 				"Monto",
@@ -141,31 +137,30 @@ if ($action == "view")
 				"Ajustes"
 		);
 		
-		foreach ($boletas as $boleta)
-		{
-			$deleteurl_boleta = new moodle_url ("/local/pluginboletas/index.php", array (
+		foreach ($boletas as $boleta){
+			$deleteurl_boleta = new moodle_url("/local/pluginboletas/index.php", array(
 					"action" => "delete",
 					"idboleta" => $boleta->id,
 			));
-			$deleteicon_boleta = new pix_icon ("t/delete", "Borrar");
-			$deleteaction_boleta = $OUTPUT->action_icon (
+			$deleteicon_boleta = new pix_icon("t/delete", "Borrar");
+			$deleteaction_boleta = $OUTPUT->action_icon(
 					$deleteurl_boleta,
 					$deleteicon_boleta,
-					new confirm_action ("Desea borrar la boleta?")
+					new confirm_action("Desea borrar la boleta?")
 			);
 			
-			$editurl_boleta = new moodle_url ("/local/pluginboletas/index.php", array (
+			$editurl_boleta = new moodle_url("/local/pluginboletas/index.php", array(
 					"action" => "edit",
 					"idboleta" => $boleta->id
 			));
-			$editicon_boleta = new pix_icon ("i/edit", "Editar");
-			$editaction_boleta = $OUTPUT->action_icon (
+			$editicon_boleta = new pix_icon("i/edit", "Editar");
+			$editaction_boleta = $OUTPUT->action_icon(
 					$editurl_boleta,
 					$editicon_boleta,
-					new confirm_action ("Desea editar la boleta?")
+					new confirm_action("Desea editar la boleta?")
 			);
 			
-			$boletastable->data[] = array (
+			$boletastable->data[] = array(
 					$boleta->id,
 					date("d-m-Y", $boleta->fecha),
 					"$".$boleta->monto,
@@ -196,23 +191,22 @@ if ($action == "view")
 	);
 }
 
+// Displays the form to add a record
 if ($action == "add"){
 	$addform->display();
 }
 
+// Displays the form to edit a record
 if( $action == "edit" ){
 	$editform->display();
 }
 
-if ($action == "view")
-{
+// Displays all the records, tabs, and options
+if ($action == "view"){
 	echo $OUTPUT->tabtree($toprow, "Boletas");
-	if (count($boletas) == 0)
-	{
+	if (count($boletas) == 0){
 		echo html_writer::nonempty_tag("h4", "No existen boletas", array("align" => "center"));
-	}
-	else
-	{
+	}else{
 			echo html_writer::table($boletastable);
 	}
 	

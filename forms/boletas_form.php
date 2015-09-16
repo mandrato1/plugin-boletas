@@ -26,18 +26,20 @@ require_once (dirname(dirname(dirname(dirname(__FILE__))))."/config.php");
 require_once ($CFG->libdir."/formslib.php");
 
 class addboleta_form extends moodleform {
-	function definition (){
+	function definition(){
 		global $DB, $CFG;
 		$mform = $this->_form;
+		
+		// Query for retrieving users records in a certain way
 		$sql = "SELECT id, CONCAT(firstname, ' ', lastname) AS name, email
 				FROM {user}
 				WHERE id>2";
 		
-		// Retrieves each address
+		// Retrieves addresses and users records
 		$sedes = $DB->get_records("pluginboletas_sedes");
 		$users = $DB->get_records_sql($sql, array(1));
 		
-		// User ID input
+		// Select user input
 		foreach($users as $user){
 			$id = $user->id;
 			$name = $user->name;
@@ -95,17 +97,20 @@ class editboleta_form extends moodleform {
 		$mform = $this->_form;
 		$instance = $this->_customdata;
 		$idboleta = $instance["idboleta"];
+		
+		// Query for retrieving users records in a certain way
 		$sql = "SELECT id, CONCAT(firstname, ' ', lastname) AS name, email
 				FROM {user} 
 				WHERE id>2";
 		
-		// Gets all the users and addresses registered in the database
+		// Retrieves addresses and users records
 		$users = $DB->get_records_sql($sql, array(1));
 		$sedes = $DB->get_records("pluginboletas_sedes");
 		
 		// Retrieves the previous information registered
-		$boletadata = $DB->get_record("pluginboletas_boletas", array("id"=>$idboleta));
+		$boletadata = $DB->get_record("pluginboletas_boletas", array("id" => $idboleta));
 		
+		// Select user input
 		foreach ($users as $user){
 			$id = $user->id;
 			$name = $user->name;
@@ -114,28 +119,29 @@ class editboleta_form extends moodleform {
 		}
 		$mform->addElement("select", "usuarios_id", "Usuario", $usernames);
 		
-		foreach($sedes as $sede){
+		// Select address input
+		foreach ($sedes as $sede){
 			$address[$sede->id] = $sede->direccion;
 		}
 		$mform->addElement("select", "sedes_id", "Sede", $address);
-
+		
+		// Amount paid input
 		$mform->addElement("text", "monto", "Monto");
 		$mform->setType("monto", PARAM_TEXT);
 		$mform->setDefault("monto", $boletadata->monto);
 		
 		// Set action to "edit"
-		$mform->addElement ("hidden", "action", "edit");
-		$mform->setType ("action", PARAM_TEXT);
+		$mform->addElement("hidden", "action", "edit");
+		$mform->setType("action", PARAM_TEXT);
 		$mform->addElement("hidden", "idboleta", $idboleta);
 		$mform->setType("idboleta", PARAM_INT);
 		
-		$this->add_action_buttons (true);
+		$this->add_action_buttons(true);
 	}
 	
 	function validation($data, $files){
 		global $DB;
 		$errors = array ();
-		
 		$monto = $data["monto"];
 		
 		if (isset($data["usuarios_id"]) && !empty($data["usuarios_id"]) && $data["usuarios_id"] != "" && $data["usuarios_id"] != null ){
