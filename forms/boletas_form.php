@@ -29,16 +29,25 @@ class addboleta_form extends moodleform {
 	function definition (){
 		global $DB, $CFG;
 		$mform = $this->_form;
+		$sql = "SELECT id, CONCAT(firstname, ' ', lastname) AS name, email
+				FROM {user}
+				WHERE id>2";
 		
 		// Retrieves each address
-		$sedes = $DB->get_records ("pluginboletas_sedes");
+		$sedes = $DB->get_records("pluginboletas_sedes");
+		$users = $DB->get_records_sql($sql, array(1));
 		
 		// User ID input
-		$mform->addElement ("text", "usuarios_id", "ID del usuario");
-		$mform->setType ("usuarios_id", PARAM_TEXT);
+		foreach($users as $user){
+			$id = $user->id;
+			$name = $user->name;
+			$email = $user->email;
+			$usernames[$user->id] = $id." - ".$name." - ".$email;
+		}
+		$mform->addElement("select", "usuarios_id", "Usuario", $usernames);
 		
 		// Select address input
-		foreach ($sedes as $sede){
+		foreach($sedes as $sede){
 			$address[$sede->id] = $sede->direccion;
 		}
 		$mform->addElement ("select", "sedes_id", "Sede de compra", $address);
@@ -94,17 +103,22 @@ class editboleta_form extends moodleform {
 		$users = $DB->get_records_sql($sql, array(1));
 		$sedes = $DB->get_records("pluginboletas_sedes");
 		
-		foreach ($users as $user){
-			$userinfo[$user->id] = $user;
-		}
-		foreach($sedes as $sede){
-			$address[$sede->id] = $sede;
-		}
-		
 		// Retrieves the previous information registered
 		$boletadata = $DB->get_record("pluginboletas_boletas", array("id"=>$idboleta));
-
 		
+		foreach ($users as $user){
+			$id = $user->id;
+			$name = $user->name;
+			$email = $user->email;
+			$usernames[$user->id] = $id." - ".$name." - ".$email;
+		}
+		$mform->addElement("select", "usuarios_id", "Usuario", $usernames);
+		
+		foreach($sedes as $sede){
+			$address[$sede->id] = $sede->direccion;
+		}
+		$mform->addElement("select", "sedes_id", "Sede", $address);
+
 		$mform->addElement("text", "monto", "Monto");
 		$mform->setType("monto", PARAM_TEXT);
 		$mform->setDefault("monto", $boletadata->monto);

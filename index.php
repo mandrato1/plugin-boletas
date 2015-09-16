@@ -83,6 +83,7 @@ if($action == "edit"){
 				$action = "view";
 			}else if($editform->get_data()){
 				$record = new stdClass();
+				$record->id = $idboleta;
 				$record->usuarios_id = $editform->get_data()->usuarios_id;
 				$record->sedes_id = $editform->get_data()->sedes_id;
 				$record->monto = $editform->get_data()->monto;
@@ -125,7 +126,8 @@ if ($action == "view")
 {
 	$sql = "SELECT b.id, b.fecha, b.monto, CONCAT(u.firstname, ' ', u.lastname) AS nombre, s.direccion
 			FROM {pluginboletas_boletas} AS b, {user} AS u, {pluginboletas_sedes} AS s 
-			WHERE b.usuarios_id=u.id AND b.sedes_id=s.id";
+			WHERE b.usuarios_id=u.id AND b.sedes_id=s.id
+			GROUP BY b.id";
 	$boletas = $DB->get_records_sql($sql, array(1));
 	$boletastable = new html_table();
 	if (count($boletas) > 0)
