@@ -36,7 +36,6 @@ $PAGE->set_pagelayout("standard");
 // Possible actions -> view, add, edit or delete. Standard is view mode
 $action = optional_param("action", "view", PARAM_TEXT);
 $idboleta = optional_param("idboleta", null, PARAM_INT);
-$date = date("Ymd", time());
 global $DB, $PAGE, $OUTPUT;
 
 require_login();
@@ -66,11 +65,10 @@ if ($action == "add"){
 	}
 }
 
-if( $action == "edit" ){
-	if( $idboleta == null ){
+if($action == "edit"){
+	if($idboleta == null){
 		print_error("La boleta no existe");
 		$action = "view";
-		
 	}else{
 		if($boleta = $DB->get_record("pluginboletas_boletas", array("id"=>$idboleta))){
 			$editform = new editboleta_form(null, array(
@@ -81,7 +79,7 @@ if( $action == "edit" ){
 			$defaultdata->sedes_id = $boleta->sedes_id;
 			$defaultdata->monto = $boleta->monto;
 			$editform->set_data($defaultdata);
-			if( $editform->is_cancelled() ){
+			if($editform->is_cancelled()){
 				$action = "view";
 			}else if($editform->get_data()){
 				$record = new stdClass();
