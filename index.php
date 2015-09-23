@@ -43,8 +43,8 @@ if (isguestuser()){
 	die();
 }
 
-$PAGE->set_title("Boletas UAI");
-$PAGE->set_heading("Boletas UAI");
+$PAGE->set_title(get_string("title", "local_pluginboletas"));
+$PAGE->set_heading(get_string("receipts_heading", "local_pluginboletas"));
 echo $OUTPUT->header();
 
 // Adds a record to the database
@@ -69,7 +69,7 @@ if ($action == "add"){
 // Edits an existent record
 if($action == "edit"){
 	if($idboleta == null){
-		print_error("La boleta no existe");
+		print_error(get_string("receipt_notselected", "local_pluginboletas"));
 		$action = "view";
 	}else{
 		if($boleta = $DB->get_record("pluginboletas_boletas", array("id" => $idboleta))){
@@ -96,7 +96,7 @@ if($action == "edit"){
 				$action = "view";
 			}
 		}else{
-			print_error("La boleta no existe");
+			print_error(get_string("receipt_doesntexist", "local_pluginboletas"));
 			$action = "view";
 		}
 	}
@@ -105,14 +105,14 @@ if($action == "edit"){
 // Delete the selected record
 if ($action == "delete"){
 	if ($idboleta == null){
-		print_error("No se selecciono boleta");
+		print_error(get_string("receipt_notselected", "local_pluginboletas"));
 		$action = "view";
 	}else{
 		if ($boleta = $DB->get_record("pluginboletas_boletas", array("id" => $idboleta))){
 			$DB->delete_records("pluginboletas_boletas", array("id" => $boleta->id));
 			$action = "view";
 		}else{
-			print_error("La boleta no existe");
+			print_error(get_string("receipt_doesntexist", "local_pluginboletas"));
 			$action = "view";
 		}
 	}
@@ -124,20 +124,22 @@ if ($action == "view"){
 			FROM {pluginboletas_boletas} AS b, {user} AS u, {pluginboletas_sedes} AS s 
 			WHERE b.usuarios_id=u.id AND b.sedes_id=s.id
 			GROUP BY b.id";
+	
 	$boletas = $DB->get_records_sql($sql, array(1));
 	$boletastable = new html_table();
 	
 	if (count($boletas) > 0){
 		$boletastable->head = array(
 				"ID",
-				"Fecha de emisi&oacute;n",
-				"Monto",
-				"Cliente",
-				"Sede",
-				"Ajustes"
+				get_string("date", "local_pluginboletas"),
+				get_string("amount", "local_pluginboletas"),
+				get_string("client", "local_pluginboletas"),
+				get_string("address", "local_pluginboletas"),
+				get_string("settings", "local_pluginboletas")
 		);
 		
 		foreach ($boletas as $boleta){
+			// Define deletion icon and url
 			$deleteurl_boleta = new moodle_url("/local/pluginboletas/index.php", array(
 					"action" => "delete",
 					"idboleta" => $boleta->id,
@@ -146,9 +148,10 @@ if ($action == "view"){
 			$deleteaction_boleta = $OUTPUT->action_icon(
 					$deleteurl_boleta,
 					$deleteicon_boleta,
-					new confirm_action("Desea borrar la boleta?")
+					new confirm_action(get_string("receipt_deleteconfirm", "local_pluginboletas"))
 			);
 			
+			// Define edition icon and url
 			$editurl_boleta = new moodle_url("/local/pluginboletas/index.php", array(
 					"action" => "edit",
 					"idboleta" => $boleta->id
@@ -157,7 +160,7 @@ if ($action == "view"){
 			$editaction_boleta = $OUTPUT->action_icon(
 					$editurl_boleta,
 					$editicon_boleta,
-					new confirm_action("Desea editar la boleta?")
+					new confirm_action(get_string("receipt_editconfirm", "local_pluginboletas"))
 			);
 			
 			$boletastable->data[] = array(
@@ -175,19 +178,19 @@ if ($action == "view"){
 
 	$toprow = array();
 	$toprow[] = new tabobject(
-			"Boletas",
+			get_string("receipts", "local_pluginboletas"),
 			new moodle_url("/local/pluginboletas/index.php"),
-			"Boletas"
+			get_string("receipts", "local_pluginboletas")
 	);
 	$toprow[] = new tabobject(
-			"Usuarios",
+			get_string("users", "local_pluginboletas"),
 			new moodle_url("/local/pluginboletas/users.php"),
-			"Usuarios"
+			get_string("users", "local_pluginboletas")
 	);
 	$toprow[] = new tabobject(
-			"Sedes",
+			get_string("addresses", "local_pluginboletas"),
 			new moodle_url("/local/pluginboletas/sedes.php"),
-			"Sedes"
+			get_string("addresses", "local_pluginboletas")
 	);
 }
 
@@ -203,14 +206,14 @@ if( $action == "edit" ){
 
 // Displays all the records, tabs, and options
 if ($action == "view"){
-	echo $OUTPUT->tabtree($toprow, "Boletas");
+	echo $OUTPUT->tabtree($toprow, get_string("receipts", "local_pluginboletas"));
 	if (count($boletas) == 0){
-		echo html_writer::nonempty_tag("h4", "No existen boletas", array("align" => "center"));
+		echo html_writer::nonempty_tag("h4", get_string("noreceipts", "local_pluginboletas"), array("align" => "center"));
 	}else{
 			echo html_writer::table($boletastable);
 	}
 	
-	echo html_writer::nonempty_tag("div", $OUTPUT->single_button($buttonurl, "Anadir registro de boleta"), array("align" => "center"));
+	echo html_writer::nonempty_tag("div", $OUTPUT->single_button($buttonurl, get_string("addreceipt", "local_pluginboletas")), array("align" => "center"));
 }
 
 echo $OUTPUT->footer();

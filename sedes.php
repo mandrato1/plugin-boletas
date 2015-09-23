@@ -43,8 +43,8 @@ if (isguestuser()){
 	die();
 }
 
-$PAGE->set_title("Sedes");
-$PAGE->set_heading("Sedes");
+$PAGE->set_title(get_string("title", "local_pluginboletas"));
+$PAGE->set_heading(get_string("addresses_heading", "local_pluginboletas"));
 echo $OUTPUT->header();
 
 // Adds a record to the database
@@ -66,7 +66,7 @@ if ($action == "add"){
 // Edits an existent record
 if($action == "edit"){
 	if($idlocal == null){
-		print_error("La sede no existe");
+		print_error(get_string("address_doesntexist", "local_pluginboletas"));
 		$action = "view";
 	}else{
 		if($local = $DB->get_record("pluginboletas_sedes", array("id" => $idlocal))){
@@ -86,7 +86,7 @@ if($action == "edit"){
 				$action = "view";
 			}
 		}else{
-			print_error("La sede no existe");
+			print_error(get_string("address_doesntexist", "local_pluginboletas"));
 			$action = "view";
 		}
 	}
@@ -95,14 +95,14 @@ if($action == "edit"){
 // Delete the selected record
 if ($action == "delete"){
 	if ($idlocal == null){
-		print_error("No se selecciono sede");
+		print_error(get_string("address_notselected", "local_pluginboletas"));
 		$action = "view";
 	}else{
 		if ($local = $DB->get_record("pluginboletas_sedes", array("id" => $idlocal))){
 			$DB->delete_records("pluginboletas_sedes", array("id" => $local->id));
 			$action = "view";
 		}else{
-			print_error("La sede no existe");
+			print_error(get_string("address_doesntexist", "local_pluginboletas"));
 			$action = "view";
 		}
 	}
@@ -116,11 +116,12 @@ if ($action == "view"){
 	if (count($locals) > 0){
 		$localstable->head = array(
 				"ID",
-				"Direcci&oacute;n",
-				"Ajustes"
+				get_string("address", "local_pluginboletas"),
+				get_string("settings", "local_pluginboletas")
 		);
 
 		foreach($locals as $local){
+			// Define deletion icon and url
 			$deleteurl_local = new moodle_url("/local/pluginboletas/sedes.php", array(
 					"action" => "delete",
 					"idlocal" => $local->id,
@@ -129,9 +130,10 @@ if ($action == "view"){
 			$deleteaction_local = $OUTPUT->action_icon(
 					$deleteurl_local,
 					$deleteicon_local,
-					new confirm_action("Desea borrar el registro de la sede?")
+					new confirm_action(get_string("address_deleteconfirm", "local_pluginboletas"))
 			);
 
+			// Define edition icon and url
 			$editurl_local = new moodle_url("/local/pluginboletas/sedes.php", array(
 					"action" => "edit",
 					"idlocal" => $local->id
@@ -140,9 +142,9 @@ if ($action == "view"){
 			$editaction_local = $OUTPUT->action_icon(
 					$editurl_local,
 					$editicon_local,
-					new confirm_action("Desea editar el registro de la sede?")
+					new confirm_action(get_string("address_editconfirm", "local_pluginboletas"))
 			);
-
+			
 			$localstable->data[] = array(
 					$local->id,
 					$local->direccion,
@@ -155,19 +157,19 @@ if ($action == "view"){
 
 	$toprow = array();
 	$toprow[] = new tabobject(
-			"Boletas",
+			get_string("receipts", "local_pluginboletas"),
 			new moodle_url("/local/pluginboletas/index.php"),
-			"Boletas"
+			get_string("receipts", "local_pluginboletas")
 	);
 	$toprow[] = new tabobject(
-			"Usuarios",
+			get_string("users", "local_pluginboletas"),
 			new moodle_url("/local/pluginboletas/users.php"),
-			"Usuarios"
+			get_string("users", "local_pluginboletas")
 	);
 	$toprow[] = new tabobject(
-			"Sedes",
+			get_string("addresses", "local_pluginboletas"),
 			new moodle_url("/local/pluginboletas/sedes.php"),
-			"Sedes"
+			get_string("addresses", "local_pluginboletas")
 	);
 }
 
@@ -183,14 +185,14 @@ if( $action == "edit" ){
 
 // Displays all the records, tabs, and options
 if ($action == "view"){
-	echo $OUTPUT->tabtree($toprow, "Sedes");
+	echo $OUTPUT->tabtree($toprow, get_string("addresses", "local_pluginboletas"));
 	if (count($locals) == 0){
-		echo html_writer::nonempty_tag("h4", "No existen registros de sedes", array("align" => "center"));
+		echo html_writer::nonempty_tag("h4", get_string("noaddresses", "local_pluginboletas"), array("align" => "center"));
 	}else{
 		echo html_writer::table($localstable);
 	}
 
-	echo html_writer::nonempty_tag("div", $OUTPUT->single_button($buttonurl, "Anadir registro de sede"), array("align" => "center"));
+	echo html_writer::nonempty_tag("div", $OUTPUT->single_button($buttonurl, get_string("addaddress", "local_pluginboletas")), array("align" => "center"));
 }
 
 echo $OUTPUT->footer();

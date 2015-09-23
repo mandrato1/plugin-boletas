@@ -38,20 +38,21 @@ if (isguestuser()){
 	die();
 }
 
-$PAGE->set_title("Usuarios");
-$PAGE->set_heading("Usuarios");
+$PAGE->set_title(get_string("title", "local_pluginboletas"));
+$PAGE->set_heading(get_string("users_heading", "local_pluginboletas"));
 echo $OUTPUT->header();
 
-// Query for retrieving users records in a certain way
+// Query for retrieving users records, skipping Guest and Admin users
 $sql = "SELECT id, CONCAT(firstname, ' ', lastname) AS name, email
-		FROM {user}";
+		FROM {user}
+		WHERE id>2";
 $users = $DB->get_records_sql($sql, array(1));
 $userstable = new html_table();
 
 if (count($users) > 0){
 	$userstable->head = array(
 			"ID",
-			"Nombre",
+			get_string("name", "local_pluginboletas"),
 			"E-mail"
 	);
 	
@@ -67,24 +68,24 @@ if (count($users) > 0){
 
 $toprow = array();
 $toprow[] = new tabobject(
-		"Boletas",
+		get_string("receipts", "local_pluginboletas"),
 		new moodle_url("/local/pluginboletas/index.php"),
-		"Boletas"
+		get_string("receipts", "local_pluginboletas")
 );
 $toprow[] = new tabobject(
-		"Usuarios",
+		get_string("users", "local_pluginboletas"),
 		new moodle_url("/local/pluginboletas/users.php"),
-		"Usuarios"
+		get_string("users", "local_pluginboletas")
 );
 $toprow[] = new tabobject(
-		"Sedes",
+		get_string("addresses", "local_pluginboletas"),
 		new moodle_url("/local/pluginboletas/sedes.php"),
-		"Sedes"
+		get_string("addresses", "local_pluginboletas")
 );
 
-echo $OUTPUT->tabtree($toprow, "Usuarios");
+echo $OUTPUT->tabtree($toprow, get_string("users", "local_pluginboletas"));
 if (count($users) == 0){
-	echo html_writer::nonempty_tag("h4", "No existen registros de usuarios", array("align" => "center"));
+	echo html_writer::nonempty_tag("h4", get_string("nousers", "local_pluginboletas"), array("align" => "center"));
 }else{
 	echo html_writer::table($userstable);
 }

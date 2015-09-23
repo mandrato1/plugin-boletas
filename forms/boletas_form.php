@@ -40,22 +40,24 @@ class addboleta_form extends moodleform {
 		$users = $DB->get_records_sql($sql, array(1));
 		
 		// Select user input
+		$usernames = array();
 		foreach($users as $user){
 			$id = $user->id;
 			$name = $user->name;
 			$email = $user->email;
 			$usernames[$user->id] = $id." - ".$name." - ".$email;
 		}
-		$mform->addElement("select", "usuarios_id", "Usuario", $usernames);
+		$mform->addElement("select", "usuarios_id", get_string("user", "local_pluginboletas"), $usernames);
 		
 		// Select address input
+		$address = array();
 		foreach($sedes as $sede){
 			$address[$sede->id] = $sede->direccion;
 		}
-		$mform->addElement ("select", "sedes_id", "Sede de compra", $address);
+		$mform->addElement ("select", "sedes_id", get_string("address", "local_pluginboletas"), $address);
 		
 		// Amount paid input
-		$mform->addElement ("text", "monto", "Monto");
+		$mform->addElement ("text", "monto", get_string("amount", "local_pluginboletas"));
 		$mform->setType ("monto", PARAM_TEXT);
 		
 		// Set action to "add"
@@ -74,17 +76,17 @@ class addboleta_form extends moodleform {
 		
 		if (isset($data["usuarios_id"]) && !empty($data["usuarios_id"]) && $data["usuarios_id"] != "" && $data["usuarios_id"] != null ){
 		}else{
-			$errors["usuarios_id"] = "Este campo es requerido";
+			$errors["usuarios_id"] = get_string("field_required", "local_pluginboletas");
 		}
 		
 		if (isset($data["sedes_id"]) && !empty($data["sedes_id"]) && $data["sedes_id"] != "" && $data["sedes_id"] != null ){
 		}else{
-			$errors["sedes_id"] = "Este campo es requerido";
+			$errors["sedes_id"] = get_string("field_required", "local_pluginboletas");
 		}
 		
 		if (isset($data["monto"]) && !empty($data["monto"]) && $data["monto"] != "" && $data["monto"] != null ){
 		}else{
-			$errors["monto"] = "Este campo es requerido";
+			$errors["monto"] = get_string("field_required", "local_pluginboletas");
 		}
 		
 		return $errors;
@@ -117,16 +119,16 @@ class editboleta_form extends moodleform {
 			$email = $user->email;
 			$usernames[$user->id] = $id." - ".$name." - ".$email;
 		}
-		$mform->addElement("select", "usuarios_id", "Usuario", $usernames);
+		$mform->addElement("select", "usuarios_id", get_string("user", "local_pluginboletas"), $usernames);
 		
 		// Select address input
 		foreach ($sedes as $sede){
 			$address[$sede->id] = $sede->direccion;
 		}
-		$mform->addElement("select", "sedes_id", "Sede", $address);
+		$mform->addElement("select", "sedes_id", get_string("address", "local_pluginboletas"), $address);
 		
 		// Amount paid input
-		$mform->addElement("text", "monto", "Monto");
+		$mform->addElement("text", "monto", get_string("amount", "local_pluginboletas"));
 		$mform->setType("monto", PARAM_TEXT);
 		$mform->setDefault("monto", $boletadata->monto);
 		
@@ -146,17 +148,17 @@ class editboleta_form extends moodleform {
 		
 		if (isset($data["usuarios_id"]) && !empty($data["usuarios_id"]) && $data["usuarios_id"] != "" && $data["usuarios_id"] != null ){
 		}else{
-			$errors["usuarios_id"] = "Este campo es requerido";
+			$errors["usuarios_id"] = get_string("field_required", "local_pluginboletas");
 		}
 		
 		if (isset($data["sedes_id"]) && !empty($data["sedes_id"]) && $data["sedes_id"] != "" && $data["sedes_id"] != null ){
 		}else{
-			$errors["sedes_id"] = "Este campo es requerido";
+			$errors["sedes_id"] = get_string("field_required", "local_pluginboletas");
 		}
 		
 		if (isset($data["monto"]) && !empty($data["monto"]) && $data["monto"] != "" && $data["monto"] != null ){
 		}else{
-			$errors["monto"] = "Este campo es requerido";
+			$errors["monto"] = get_string("field_required", "local_pluginboletas");
 		}
 		
 		return $errors;

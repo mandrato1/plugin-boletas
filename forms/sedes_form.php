@@ -31,7 +31,7 @@ class addlocal_form extends moodleform {
 		$mform = $this->_form;
 
 		// Address input
-		$mform->addElement("text", "direccion", "Direccion (calle y numeracion)");
+		$mform->addElement("text", "direccion", get_string("field_address", "local_pluginboletas"));
 		$mform->setType("direccion", PARAM_TEXT);
 
 		// Set action to "add"
@@ -48,7 +48,7 @@ class addlocal_form extends moodleform {
 
 		if (isset($data["direccion"]) && !empty($data["direccion"]) && $data["direccion"] != "" && $data["direccion"] != null ){
 		}else{
-			$errors["direccion"] = "Este campo es requerido";
+			$errors["direccion"] = get_string("field_required", "local_pluginboletas");
 		}
 
 		return $errors;
@@ -66,7 +66,7 @@ class editlocal_form extends moodleform {
 		$local = $DB->get_record("pluginboletas_sedes", array("id" => $idlocal));
 		
 		// Address input
-		$mform->addElement("text", "direccion", "Direccion (calle y numeracion)");
+		$mform->addElement("text", "direccion", get_string("field_address", "local_pluginboletas"));
 		$mform->setType("direccion", PARAM_TEXT);
 		$mform->setDefault("direccion", $local->direccion);
 
@@ -76,7 +76,7 @@ class editlocal_form extends moodleform {
 		$mform->addElement("hidden", "idlocal", $idlocal);
 		$mform->setType("idlocal", PARAM_INT);
 
-		$this->add_action_buttons (true);
+		$this->add_action_buttons(true);
 	}
 
 	function validation($data, $files){
@@ -86,7 +86,7 @@ class editlocal_form extends moodleform {
 
 		if (isset($data["direccion"]) && !empty($data["direccion"]) && $data["direccion"] != "" && $data["direccion"] != null ){
 		}else{
-			$errors["direccion"] = "Este campo es requerido";
+			$errors["direccion"] = get_string("field_required", "local_pluginboletas");
 		}
 
 		return $errors;
